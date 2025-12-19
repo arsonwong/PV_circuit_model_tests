@@ -14,8 +14,18 @@ modules = [
 ]
 from utilities import *
 
-if __name__ == "__main__":
+def test_all_examples():
+    """
+    Pytest entry point: run all example modules' run_test() functions.
+
+    Any assertion or exception inside those run_test() functions will
+    cause this test to fail and thus fail CI.
+    """
     for i, name in enumerate(modules):
-        print(f"\n--------------------------------\nRunning Test {i+1}: {name}\n--------------------------------\n")
+        print(f"\n-------------------------------\nRunning Test {i+1}: {name}\n")
         mod = importlib.import_module(name)
         mod.run_test()
+
+if __name__ == "__main__":
+    # Keep the old CLI behavior for running locally:
+    test_all_examples()
