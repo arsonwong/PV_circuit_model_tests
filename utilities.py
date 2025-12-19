@@ -126,7 +126,7 @@ def compare_nested_dicts(dict1, dict2, path="", pytest_mode=False):
     
     return all_pass
 
-def run_record_or_test(device, this_file_prefix=None, pytest_mode=False):
+def run_record_or_test(device, this_file_prefix=None):
     mode = get_mode()
     this_time_dict = get_fields(device, prefix=this_file_prefix)
     this_time_solver_env_variables = ParameterSet.get_set("solver_env_variables")()
@@ -192,7 +192,7 @@ def compare_devices(device1,device2,lineage=[],pytest_mode=False):
                     else:
                         print(f"{field} is different in device1{lineage_word} ({device1_field}) vs device2{lineage_word} ({device2_field})")
 
-def record_or_compare_artifact(device, this_file_prefix=None,pytest_mode=False):
+def record_or_compare_artifact(device, this_file_prefix=None):
     mode = get_mode()
     if mode=="record":
         device.dump(make_file_path_with_timestamp(this_file_prefix+"_result", "bson"))
@@ -218,10 +218,11 @@ def get_LT_spice_IV(folder, device_name):
     LT_spice_IV = LT_spice_IV.T
     return LT_spice_IV
 
-def compare_artifact_against_LT_spice(device, LT_spice_IV, pytest_mode=False):
+def compare_artifact_against_LT_spice(device, LT_spice_IV):
     mode = get_mode()
-    if mode != "test":
+    if mode == "record":
         return None, None, None
+    pytest_mode = (mode=="pytest")
     Pmax1 = get_Pmax(device.IV_table)
     Pmax2 = get_Pmax(LT_spice_IV)
     all_pass = True

@@ -25,10 +25,10 @@ def make_device(display=False):
 
     return string
 
-def run_test(display=False,pytest_mode=False):
+def run_test(display=False):
     device = make_device(display=display)
-    device = record_or_compare_artifact(device, this_file_prefix="a04",pytest_mode=pytest_mode)
-    run_record_or_test(device, this_file_prefix="a04",pytest_mode=pytest_mode)
+    device = record_or_compare_artifact(device, this_file_prefix="a04")
+    run_record_or_test(device, this_file_prefix="a04")
 
 if __name__ == "__main__": 
     run_test(display=True)

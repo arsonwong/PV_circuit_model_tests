@@ -8,14 +8,14 @@ from pathlib import Path
 PARENT = Path(__file__).resolve().parents[1]
 THIS_DIR = Path(__file__).resolve().parent
 
-def run_test_for_a05_10(this_file_prefix, this_device_name, display=False,pytest_mode=False):
+def run_test_for_a05_10(this_file_prefix, this_device_name, display=False):
     filepath = find_latest_file(this_file_prefix+"_result","bson")
     device = Artifact.load(filepath)
     t1 = time.perf_counter()
     device.get_Pmax()
     print(f"Finished in {time.perf_counter()-t1} seconds")
     LT_spice_IV = get_LT_spice_IV(THIS_DIR / "a05_to_10_LT spice results", this_device_name)
-    all_pass, Pmax1, Pmax2 = compare_artifact_against_LT_spice(device,LT_spice_IV,pytest_mode=pytest_mode)
+    all_pass, Pmax1, Pmax2 = compare_artifact_against_LT_spice(device,LT_spice_IV)
     if all_pass:
         print(this_file_prefix + " all pass!")
     if display and Pmax1 is not None:
@@ -34,8 +34,8 @@ def run_test_for_a05_10(this_file_prefix, this_device_name, display=False,pytest
         plt.legend()
         plt.show()
 
-def run_test(display=False,pytest_mode=False):
-    run_test_for_a05_10("a05","cell",display=display,pytest_mode=pytest_mode)
+def run_test(display=False):
+    run_test_for_a05_10("a05","cell",display=display)
 
 if __name__ == "__main__": 
     run_test(display=True)
