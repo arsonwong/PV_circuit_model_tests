@@ -1,7 +1,7 @@
-from PV_Circuit_Model.device import *
-from PV_Circuit_Model.device_analysis import *
+from PV_Circuit_Model.circuit_model import circuit_deepcopy
+from PV_Circuit_Model.device import make_butterfly_module
 import a01_make_solar_cell as example1
-from utilities import *
+from utilities import run_record_or_test, record_or_compare_artifact
 
 def make_device(display=False):
     cell = example1.make_device()

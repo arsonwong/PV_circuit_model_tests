@@ -71,6 +71,9 @@ def find_latest_file(prefix,extension="pkl"):
             except ValueError:
                 continue  # Skip files with invalid timestamp format
 
+    if latest_file is None:
+        raise AttributeError("find_latest_file failed")
+
     return os.path.join(directory, latest_file)
 
 def compare_nested_dicts(dict1, dict2, path="", pytest_mode=False):
@@ -126,10 +129,13 @@ def compare_nested_dicts(dict1, dict2, path="", pytest_mode=False):
     
     return all_pass
 
-def run_record_or_test(device, this_file_prefix=None):
+def run_record_or_test(device, this_file_prefix: str):
     mode = get_mode()
     this_time_dict = get_fields(device, prefix=this_file_prefix)
-    this_time_solver_env_variables = ParameterSet.get_set("solver_env_variables")()
+    this_time_solver_env_variables = ParameterSet.get_set("solver_env_variables")
+    if this_time_solver_env_variables is None:
+        raise AttributeError("Missing solver env variables")
+    this_time_solver_env_variables = this_time_solver_env_variables()
     total_set = {"solver_env_variables": this_time_solver_env_variables, "results": this_time_dict}
     if mode=="record":
         with open(make_file_path_with_timestamp(this_file_prefix+"_result", "pkl"), "wb") as f:
@@ -192,7 +198,7 @@ def compare_devices(device1,device2,lineage=[],pytest_mode=False):
                     else:
                         print(f"{field} is different in device1{lineage_word} ({device1_field}) vs device2{lineage_word} ({device2_field})")
 
-def record_or_compare_artifact(device, this_file_prefix=None):
+def record_or_compare_artifact(device, this_file_prefix: str) -> object:
     mode = get_mode()
     if mode=="record":
         device.dump(make_file_path_with_timestamp(this_file_prefix+"_result", "bson"))
@@ -237,15 +243,15 @@ def compare_artifact_against_LT_spice(device, LT_spice_IV):
     rtol = 1e-4
     atol = 1e-4
     for i in range(LT_spice_IV.shape[1]):
-        V = LT_spice_IV[0,i]
-        I = LT_spice_IV[1,i]
-        I_interp = np.interp(V,device.IV_V,device.IV_I)
-        V_interp = np.interp(I,device.IV_I,device.IV_V)
-        if not np.isclose(V_interp, V, rtol=rtol, atol=atol) and not np.isclose(I_interp, I, rtol=rtol, atol=atol):
-            print(f"Difference in IV curves at V = {V}:  I={I} (LT spice) != {I_interp} (PV Circuit Model)")
+        V_ = LT_spice_IV[0,i]
+        I_ = LT_spice_IV[1,i]
+        I_interp = np.interp(V_,device.IV_V,device.IV_I)
+        V_interp = np.interp(I_,device.IV_I,device.IV_V)
+        if not np.isclose(V_interp, V_, rtol=rtol, atol=atol) and not np.isclose(I_interp, I_, rtol=rtol, atol=atol):
+            print(f"Difference in IV curves at V = {V_}:  I={I_} (LT spice) != {I_interp} (PV Circuit Model)")
             all_pass = False
             if pytest_mode:
-                assert(np.isclose(V_interp, V, rtol=rtol, atol=atol) or np.isclose(I_interp, I, rtol=rtol, atol=atol))
+                assert(np.isclose(V_interp, V_, rtol=rtol, atol=atol) or np.isclose(I_interp, I_, rtol=rtol, atol=atol))
     
     return all_pass, Pmax1, Pmax2
 

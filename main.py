@@ -12,7 +12,6 @@ modules = [
     "a09_simple_uniform_string_compared_to_LT_spice",
     "a10_simple_parallel_strings_compared_to_LT_spice",
 ]
-from utilities import *
 
 def test_all_examples():
     """
